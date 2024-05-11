@@ -16,6 +16,20 @@ int printreset = 0;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 
+void addMessage(char newmsg[])
+{
+  length = strlen(newmsg);
+  if(length<=(MSGLENGTH-1))
+  {
+    messages[nummsg] = (char*)malloc(length + 1);
+    strcpy(messages[nummsg], newmsg);
+    nummsg++;
+  }
+  else
+    Serial.print("ERROR: Message too long!");
+}
+
+
 void setup()
 {
   lcd.begin(16, 2);
@@ -23,6 +37,59 @@ void setup()
   Serial.begin(9600);
   randomSeed(analogRead(0));
 
+  addMessage("I love you!");
+  addMessage("You're the sweetest");
+  addMessage("You're so smart!");
+  addMessage("I'm very proud of you");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
+  addMessage("");
   addMessage("");
 }
 
@@ -33,7 +100,7 @@ void splitMessage(char *msg, char *l1, char *l2)
 
   for(int i=16;i<=0;i--)
   {
-    if(msg[i] = ' ')
+    if(msg[i] == ' ')
     {
       spaceIndex = i;
       break;
@@ -46,7 +113,7 @@ void splitMessage(char *msg, char *l1, char *l2)
   l1[spaceIndex] = '\0';
 
   strncpy(l2, msg + spaceIndex + 1, MSGLENGTH - spaceIndex - 1);
-  l2[messageLength - spaceIndex - 1] = '\0'; // Add null terminator
+  l2[MSGLENGTH - spaceIndex - 1] = '\0'; // Add null terminator
 }
 
 
@@ -63,20 +130,6 @@ void printMessage(int index)
   lcd.setCursor(0,1);
   lcd.print(line2);
   }
-}
-
-
-void addMessage(char newmsg[])
-{
-  length = strlen(newmsg);
-  if(length<=(MSGLENGTH-1))
-  {
-    messages[nummsg] = (char*)malloc(length + 1);
-    strcpy(messages[nummsg], newmsg);
-    nummsg++;
-  }
-  else
-    Serial.print("ERROR: Message too long!");
 }
 
 
@@ -118,15 +171,20 @@ void tooMany()
 
 void loop()
 {
-  int msgidx;
+  int msgidx, lastidx;
   bool btn; 
 
   if(digitalRead(buttonPin) == HIGH)
   {
     if(!btn)
     {
-      lcd.clear();
+      lastidx = msgidx;
       msgidx = random(1,nummsg);
+      while(lastidx==msgidx)
+      {
+        msgidx = random(1,nummsg);        
+      }
+      lcd.clear();
       printMessage(msgidx);
       prints++;
     )
