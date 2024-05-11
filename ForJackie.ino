@@ -10,6 +10,8 @@ const int rs = 11, en = 12, d4 = 2, d5 = 3, d6 = 4, d7 = 5;
 
 int nummsg = 0;
 char *messages[MSGCOUNT];
+int prints = 0;
+int printreset = 0;
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -27,32 +29,90 @@ void setup()
 
 void splitMessage(char *msg, char *l1, char *l2)
 {
-  
+  int spaceIndex = -1;
+
+  for(int i=16;i<=0;i--)
+  {
+    if(msg[i] = ' ')
+    {
+      spaceIndex = i;
+      break;
+    }
+  }
+  if(spaceIndex = -1)
+    spaceIndex = 16;
+    
+  strncpy(l1, msg, spaceIndex);
+  l1[spaceIndex] = '\0';
+
+  strncpy(l2, msg + spaceIndex + 1, MSGLENGTH - spaceIndex - 1);
+  l2[messageLength - spaceIndex - 1] = '\0'; // Add null terminator
 }
 
 
 void printMessage(int index)
 {
   char *line1, *line2;
-  splitMessage(char *message[index], char *line1, char *line2);
-
+  splitMessage(char *messages[index], char *line1, char *line2);
+  if(strlen(line1) > 16 || strlen(line2) > 16)
+    Serial.print("ERROR: Lines too long for message %s",messages[index]);
+  else
+  {
   lcd.setCursor(0,0);
   lcd.print(line1);
   lcd.setCursor(0,1);
   lcd.print(line2);
+  }
 }
 
 
 void addMessage(char newmsg[])
 {
-  if(strlen(newmsg)<=MSGLENGTH)
+  length = strlen(newmsg);
+  if(length<=(MSGLENGTH-1))
   {
-    messages[nummsg] = newmsg;
+    messages[nummsg] = (char*)malloc(length + 1);
+    strcpy(messages[nummsg], newmsg);
     nummsg++;
   }
   else
     Serial.print("ERROR: Message too long!");
-  
+}
+
+
+void tooMany()
+{
+  printreset++;
+  if(printreset > 10000 && prints > 0)
+    prints--;
+  if(prints > 5)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Too many presses");
+    for(int i=0;i<2;i++)
+    {
+    lcd.setCursor(0,1);
+    lcd.print("Please wait");
+    delay(50);
+    lcd.setCursor(0,1);
+    lcd.print("Please wait.");
+    delay(50);
+    lcd.setCursor(0,1);
+    lcd.print("Please wait..");
+    delay(50);
+    lcd.setCursor(0,1);
+    lcd.print("Please wait...");
+    delay(50);
+    lcd.setCursor(0,1);
+    lcd.print("Please wait....");
+    delay(50);
+    lcd.setCursor(0,1);
+    lcd.print("Please wait.....");
+    }
+    delay(50);
+    lcd.clear()
+    prints = 0;
+  }
 }
 
 
@@ -61,8 +121,6 @@ void loop()
   int msgidx;
   bool btn; 
 
-  lcd.setCursor(0,0);
-  
   if(digitalRead(buttonPin) == HIGH)
   {
     if(!btn)
@@ -70,12 +128,15 @@ void loop()
       lcd.clear();
       msgidx = random(1,nummsg);
       printMessage(msgidx);
+      prints++;
     )
     btn = TRUE;
   }
   else
     btn = FALSE;
-    
+
+  tooMany();
+  
   delay(50);
 }
 
